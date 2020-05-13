@@ -1,31 +1,46 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import {createStore} from 'redux'
+import {createStore, bindActionCreators} from 'redux'
+import reducer from './reducer'
+import * as actions from './actions'
 
-
-
-const reducer = (state = 0, action) => {
-  
-  switch (action.type){
-    case "INC":
-      return state + 1
-    default:
-      return state
-  }
-}
 
 const store = createStore(reducer)
-store.subscribe(() => {
-  console.log(store.getState())
-})
-
-store.dispatch({type: 'INC'})
-store.dispatch({type: 'INC'})
+const { dispatch } = store
 
 
-ReactDOM.render(
-  <React.StrictMode>
-    <h1>Hello</h1>
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+const { inc, dec, rnd } = bindActionCreators( actions, dispatch)
+
+
+
+//custom bindActionCreator
+
+// const bindActionCreator = (creator, dispatch) => (...args) => {
+//   dispatch(creator(...args))
+// }
+
+// const incDispatch = () => bindActionCreator(inc, dispatch)
+// const decDispatch = () => bindActionCreator(dec, dispatch)
+// const rndDispatch = () => bindActionCreator(rnd, dispatch)
+
+document
+  .getElementById("inc")
+  .addEventListener("click", inc)
+
+document
+  .getElementById("dec")
+  .addEventListener("click", dec)
+
+document
+  .getElementById("rnd")
+  .addEventListener("click", () => {
+    const payload = Math.floor(Math.random() * 10)
+    rnd(payload)
+  })
+
+const update = () => {
+  document
+    .getElementById("counter")
+    .innerHTML = store.getState()
+}
+
+store.subscribe(update)
+
